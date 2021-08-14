@@ -1,9 +1,10 @@
 const dotenv = require('dotenv');
+const axios = require('axios');
 
 dotenv.config();
-const update = (type) => {  /// (type) -> (type, data)
-    // TODO Request Update Data...
-    console.log(`${process.env.BASEURL}/${type}`);
+const update = async (type, data) => {
+    // /schedule
+    await axios.post(`${process.env.BASEURL}/${type}`, data);
 }
 
 module.exports = update;

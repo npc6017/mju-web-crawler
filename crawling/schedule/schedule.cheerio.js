@@ -27,8 +27,9 @@ const getData = async () => {
 const scheduleCheerio = () => {
     setTimeout(() => {
         getData().then((res) => {
-            console.log(res); /// TODO Delete
-            update("schedule"); /// -> update("schedule", res)
+            update("schedule", res)
+                .then(() => { console.log("updated") })
+                .catch((err) => {console.err(err)});
         })
         scheduleCheerio();
     }, process.env.SCHEDULECYCLE)

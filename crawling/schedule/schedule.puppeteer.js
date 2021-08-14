@@ -30,8 +30,9 @@ const getData = async () => {
 const schedulePuppeteer = () => {
     setTimeout(() => {
         getData().then((res) => {
-            console.log(res); /// TODO Delete
-            update("schedule"); /// -> update("schedule", res)
+            update("schedule", res)
+                .then(() => { console.log("updated") })
+                .catch((err) => {console.err(err)});
         })
         schedulePuppeteer();
     }, process.env.SCHEDULECYCLE)

@@ -61,18 +61,18 @@ run파일, index.js에서는 사용할 crawler를 선택하여 실행하는 역�
 ### update.js
 ```javascript
 const dotenv = require('dotenv');
+const axios = require('axios');
 
 dotenv.config();
-const update = (type) => {  /// (type) -> (type, data)
-    // TODO Request Update Data...
-    console.log(`${process.env.BASEURL}/${type}`);
+const update = async (type, data) => {
+    // /schedule
+    await axios.post(`${process.env.BASEURL}/${type}`, data);
 }
 
 module.exports = update;
 ```
 데이터를 크롤링한 후 데이터베이스에 업데이트를 요청하는 역할을 한다.
-현재는 구현중이며, 임시로 요청하는 URL을 출력하도록 작성하였다.
-crawler에 따라 URL을 동적으로 요청할 예정이다.
+/schedule URI로 data를 body에 넣어 Post 요청을 보낸다.
 
 ### crawling/cheerio
 ```javascript
@@ -104,8 +104,9 @@ const getData = async () => {
 const scheduleCheerio = () => {
     setTimeout(() => {
         getData().then((res) => {
-            console.log(res); /// TODO Delete
-            update("schedule"); /// -> update("schedule", res)
+            update("schedule", res)
+                .then(() => { console.log("updated") })
+                .catch((err) => {console.err(err)});
         })
         scheduleCheerio();
     }, process.env.SCHEDULECYCLE)
@@ -153,8 +154,9 @@ const getData = async () => {
 const schedulePuppeteer = () => {
     setTimeout(() => {
         getData().then((res) => {
-            console.log(res); /// TODO Delete
-            update("schedule"); /// -> update("schedule", res)
+            update("schedule", res)
+                .then(() => { console.log("updated") })
+                .catch((err) => {console.err(err)});
         })
         schedulePuppeteer();
     }, process.env.SCHEDULECYCLE)
