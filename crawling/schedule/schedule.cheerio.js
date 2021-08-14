@@ -1,10 +1,13 @@
-const axios = require("axios");
+const axios = require('axios');
 const cheerio = require("cheerio");
 const dotenv = require('dotenv');
+const update = require('../../update');
 
 dotenv.config();
 
-/** parsing */
+/** parsing
+ * updated role : (14/08/21)developing..
+ * */
 const getData = async () => {
     const result = [];
     const html = await axios.get(process.env.SCHEDULE);
@@ -25,15 +28,10 @@ const scheduleCheerio = () => {
     setTimeout(() => {
         getData().then((res) => {
             console.log(res); /// TODO Delete
-            /// this.update(res); TODO Open when complete 'update'
+            update("schedule"); /// -> update("schedule", res)
         })
         scheduleCheerio();
     }, process.env.SCHEDULECYCLE)
-}
-
-/** update request(Post) to http://****:&&&&/schedule */
-const update = (data) => {
-    // ToDo Update Database
 }
 
 module.exports = scheduleCheerio;
