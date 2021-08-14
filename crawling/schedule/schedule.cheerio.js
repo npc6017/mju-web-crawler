@@ -6,7 +6,7 @@ const update = require('../../update');
 dotenv.config();
 
 /** parsing
- * updated role : (14/08/21)developing..
+ * updated role : (15/08/21)developing..
  * */
 const getData = async () => {
     const result = [];
