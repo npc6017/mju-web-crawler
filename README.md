@@ -64,15 +64,20 @@ const dotenv = require('dotenv');
 const axios = require('axios');
 
 dotenv.config();
+const header = { key: process.env.SECRETKEY }
+
 const update = async (type, data) => {
     const date = new Date();
     // /schedule
-    await axios.post(`${process.env.BASEURL}/${type}`, data)
+    await axios.post(`${process.env.BASEURL}/${type}`, data, { headers: header})
         .then(() => {
             console.log(`${type}/Updated - ${date}`); // 추후 로그 파일 남기는 것으로 업데이트 예정
         })
         .catch((error) => {
-            console.error("서버에서 문제가 발생하였습니다."); // 추후 로그 파일 남기는 것으로 업데이트 예정
+            if(error.response.status == 401)
+                console.error(`Error/401 - ${date}`);
+            else
+                console.error(`Error/Server - ${date}`); // 추후 로그 파일 남기는 것으로 업데이트 예정
         });
 }
 
@@ -83,6 +88,7 @@ module.exports = update;
 
 서버에 요청후 정상적으로 응답을 받으면 응답받은 시간을 로그로 남긴다.
 서버에서 문제가 발생하면 에러를 파리미터로 받긴 하지만 error로그로 간단하게 서버 문제임을 남긴다.
+시크릿 키 인증에 실패하면 401 응답 받게되고 401 Error로그를 남긴다.
 
 추후 로거를 활용하여 파일로 남기는 작업을 진행할 예정이다.
 
