@@ -29,10 +29,8 @@ const getData = async () => {
 /** cycle, Day */
 const schedulePuppeteer = () => {
     setTimeout(() => {
-        getData().then((res) => {
-            update("schedule", res)
-                .then(() => { console.log("updated") })
-                .catch((err) => {console.err(err)});
+        getData().then(async (res) => {
+            await update("schedule", res) // 예외처리는 update메서드 내에서 처리
         })
         schedulePuppeteer();
     }, process.env.SCHEDULECYCLE)

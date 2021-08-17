@@ -64,15 +64,33 @@ const dotenv = require('dotenv');
 const axios = require('axios');
 
 dotenv.config();
+const header = { key: process.env.SECRETKEY }
+
 const update = async (type, data) => {
+    const date = new Date();
     // /schedule
-    await axios.post(`${process.env.BASEURL}/${type}`, data);
+    await axios.post(`${process.env.BASEURL}/${type}`, data, { headers: header})
+        .then(() => {
+            console.log(`${type}/Updated - ${date}`); // 추후 로그 파일 남기는 것으로 업데이트 예정
+        })
+        .catch((error) => {
+            if(error.response.status == 401)
+                console.error(`Error/401 - ${date}`);
+            else
+                console.error(`Error/Server - ${date}`); // 추후 로그 파일 남기는 것으로 업데이트 예정
+        });
 }
 
 module.exports = update;
 ```
 데이터를 크롤링한 후 데이터베이스에 업데이트를 요청하는 역할을 한다.
 /schedule URI로 data를 body에 넣어 Post 요청을 보낸다.
+
+서버에 요청후 정상적으로 응답을 받으면 응답받은 시간을 로그로 남긴다.
+서버에서 문제가 발생하면 에러를 파리미터로 받긴 하지만 error로그로 간단하게 서버 문제임을 남긴다.
+시크릿 키 인증에 실패하면 401 응답 받게되고 401 Error로그를 남긴다.
+
+추후 로거를 활용하여 파일로 남기는 작업을 진행할 예정이다.
 
 ### crawling/cheerio
 ```javascript
@@ -103,10 +121,8 @@ const getData = async () => {
 /** cycle */
 const scheduleCheerio = () => {
     setTimeout(() => {
-        getData().then((res) => {
-            update("schedule", res)
-                .then(() => { console.log("updated") })
-                .catch((err) => {console.err(err)});
+        getData().then(async (res) => {
+            await update("schedule", res) // 예외처리는 update메서드 내에서 처리
         })
         scheduleCheerio();
     }, process.env.SCHEDULECYCLE)
@@ -153,10 +169,8 @@ const getData = async () => {
 /** cycle */
 const schedulePuppeteer = () => {
     setTimeout(() => {
-        getData().then((res) => {
-            update("schedule", res)
-                .then(() => { console.log("updated") })
-                .catch((err) => {console.err(err)});
+        getData().then(async (res) => {
+            await update("schedule", res) // 예외처리는 update메서드 내에서 처리
         })
         schedulePuppeteer();
     }, process.env.SCHEDULECYCLE)
